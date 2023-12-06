@@ -1,4 +1,4 @@
-from typing import Dict,List
+from typing import Dict,List, Set
 # with open("input.txt") as f:
     # input = f.read()
 test_input = """
@@ -242,7 +242,7 @@ seed_line = seed_line[seed_line.find(':') + 1:]
 seeds = [seed for seed in seed_line.split(" ")]
 seeds = [int(seed) for seed in seeds if seed != '']
 
-seed_range = set() 
+seed_range: Set[int] = set() 
 # Day 2
 current = seeds[0]
 for i in range(len(seeds)):
