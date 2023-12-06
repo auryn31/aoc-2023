@@ -11,9 +11,14 @@ Distance:   233   1011   1110   1487
 
 test_input = test_input.strip()
 times = [time for time in test_input.splitlines()[0].split(" ")[1:] if time != '']
-times = [int(time) for time in times]
 distances = [distance for distance in test_input.splitlines()[1].split(" ")[1:] if distance != '']
-distances = [int(distance) for distance in distances]
+# part 1
+# distances = [int(distance) for distance in distances]
+# times = [int(time) for time in times]
+
+# part 2
+distances = [int("".join(distances))]
+times = [int("".join(times))]
 
 def distance_for_hold(time_hold: int, race_time: int)-> int:
     # print(f"Time hold: {time_hold}")
