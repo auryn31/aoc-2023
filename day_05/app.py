@@ -201,34 +201,97 @@ humidity-to-location map:
 2277180009 1843941326 32689052
 """
 
+test_input_ = """
+seeds: 79 14 55 13
+
+seed-to-soil map:
+50 98 2
+52 50 48
+
+soil-to-fertilizer map:
+0 15 37
+37 52 2
+39 0 15
+
+fertilizer-to-water map:
+49 53 8
+0 11 42
+42 0 7
+57 7 4
+
+water-to-light map:
+88 18 7
+18 25 70
+
+light-to-temperature map:
+45 77 23
+81 45 19
+68 64 13
+
+temperature-to-humidity map:
+0 69 1
+1 0 69
+
+humidity-to-location map:
+60 56 37
+56 93 4
+"""
+
 seed_line = test_input.splitlines()[1]
 seed_line = seed_line[seed_line.find(':') + 1:]
 seeds = [seed for seed in seed_line.split(" ")]
 seeds = [int(seed) for seed in seeds if seed != '']
-print(seeds)
 
-class Range:
-    def __init__(self, start: str, end: str, distance: Dict[int,int]):
+seed_range = set() 
+# Day 2
+current = seeds[0]
+for i in range(len(seeds)):
+    if i % 2 == 1:
+        end_of_range = seeds[i]
+        curr = list(range(current, current + end_of_range))
+        # print(curr)
+        seed_range.update(curr)
+    else:
+        current = seeds[i]
+
+# Day 1 not using seed_range
+# Day 2
+seeds = seed_range
+
+# print(seeds)
+
+
+class StartEndRange:
+    def __init__(self, start: int, end: int, distance: int):
         self.start = start
         self.end = end
         self.distance = distance
+
+class Range:
+    def __init__(self, start: str, end: str, distances: List[StartEndRange]):
+        self.start = start
+        self.end = end
+        self.distances = distances
+    def get_next_val(self, start: int)-> int:
+        for r in self.distances:
+            if r.end <= start < r.end + r.distance:
+                return r.start + start - r.end 
+        return start
+        
 
 def generate_map(map_str: str):
     lines = map_str.splitlines()
     a = lines[0].split(" ")[0].split("-")[0]
     b = lines[0].split(" ")[0].split("-")[2]
-    num_map = dict()
-    # nums = []
+    ranges = []
     for num_line in lines[1:]:
         nums = [int(num) for num in num_line.split(" ") if num != '']
         a_num = nums[0]
         b_num = nums[1]
         distance = nums[2]
-
-        for i in range(distance):
-            num_map[b_num+i] = a_num+i
+        ranges.append(StartEndRange(a_num, b_num, distance))
     # print(f"range {a} {b} {num_map}")
-    return Range(a,b,num_map)
+    return Range(a,b,ranges)
 
 
 def get_to(to: str, paths: List[Range])-> Range:
@@ -257,7 +320,8 @@ def seed_to_location(seed: int, paths: List[Range])-> int:
     # print(f"seed {seed}")
     for p in path:
         current_next = get_to(p, paths)
-        current_val = current_next.distance[current_val] if current_val in current_next.distance else current_val
+        current_val = current_next.get_next_val(current_val)
+        # current_val = current_next.distance[current_val] if current_val in current_next.distance else current_val
         # print(f"{p} {current_val}")
     return current_val
         
