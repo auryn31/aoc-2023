@@ -1,4 +1,5 @@
 from typing import Dict, Tuple, List
+from math import lcm
 input = """
 LRLRLRLRRLRRRLRLRLRRRLLRRLRRLRRLLRRLRRLRLRRRLRRLLRRLRRRLRRLRRRLRRRLLLRRLLRLLRRRLLRRLRLLRLLRRRLLRRLRRLRRRLRRLRLRRLRRLRLLRLRRRLRLRRLRLLRRLRRRLRRLRLRRLLLRRLRRRLRRRLRRLRRRLRLRRLRRLRRRLRRLRRLRRLRRLRRRLLRRRLLLRRRLRRLRRRLLRRRLRRLRRLLLLLRRRLRLRRLRRLLRRLRRLRLRLRRRLRRRLRRLLLRRRR
 
@@ -754,7 +755,20 @@ SHP = (BKL, SKR)
 QXB = (KRM, SVX)
 """
 
-def next_step(curr: str, options: Dict[str, Tuple[str, str]], direction: List[str], steps: int = 0, final: str = "ZZZ") -> List[str | int]:
+input_test = """
+LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+"""
+
+def next_step(curr: str, options: Dict[str, Tuple[str, str]], direction: List[str], steps: int = 0) -> str:
     next = options[curr]
     next_direction = direction[steps % len(direction)]
     if next_direction == "R":
@@ -764,8 +778,7 @@ def next_step(curr: str, options: Dict[str, Tuple[str, str]], direction: List[st
     else:
         print(f"Invalid direction {next_direction}")
         raise ValueError(f"Invalid direction {next_direction}")
-
-    return [next[next_index], steps + 1]
+    return next[next_index]
 
 
 curr = "AAA"
@@ -778,8 +791,36 @@ for option in input.split("\n")[3:]:
     to = option.split("=")[1].strip()[1:-1].split(",")
     options[_from] = (to[0].strip(), to[1].strip())
 
-max_steps = 100
-steps = 0
-while curr != "ZZZ" :
-    [curr, steps] = next_step(curr, options, directions, steps)
-    print(f"step: {steps}, curr: {curr}")
+# Day 1
+# steps = 0
+# while curr != "ZZZ" :
+#     [curr, steps] = next_step(curr, options, directions, steps)
+#     print(f"step: {steps}, curr: {curr}")
+
+
+# day 2
+def done(current_elements: List[str])-> bool:
+    done = True
+    for element in current_elements:
+        if element[-1] != "Z":
+            done = False
+    return done
+
+elements = []
+for element in options.keys():
+    if element[-1] == "A":
+        elements.append(element)
+
+steps = []
+
+for element in elements:
+    print(f"step: {steps}, curr: {element}")
+    step = 0
+    curr = element
+    while curr[-1] != "Z":
+        curr = next_step(curr, options, directions, step)
+        step += 1
+    steps.append(step)
+print(steps)
+print(lcm(*steps))
+
